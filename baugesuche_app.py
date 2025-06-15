@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jun 15 20:03:48 2025
-
-@author: thoma
-"""
-
-Python 3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:20:11) [MSC v.1938 64 bit (AMD64)]
-Type "copyright", "credits" or "license" for more information.
-
-IPython 8.27.0 -- An enhanced Interactive Python.
-
 import streamlit as st
 import pandas as pd
 import requests

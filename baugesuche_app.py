@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import requests
 from datetime import datetime
 from babel.dates import format_date
 from reportlab.lib.pagesizes import A4
@@ -10,26 +9,20 @@ from io import BytesIO
 # Sprachwahl
 lang = st.selectbox("Sprache wählen", ["de", "fr", "it", "en"])
 
-# Daten abrufen
 @st.cache_data
 def get_data():
     url = "https://data.stadt-zuerich.ch/api/explore/v2.1/catalog/datasets/arcgis_baugesuche/exports/csv"
     return pd.read_csv(url)
 
 df = get_data()
-
-# Datum umwandeln
 df["gesuchsdatum"] = pd.to_datetime(df["gesuchsdatum"], errors="coerce")
 
-# Filter: nur die letzten 30 Tage
 today = pd.Timestamp.now()
 df_filtered = df[df["gesuchsdatum"] >= today - pd.Timedelta(days=30)]
 
-# Anzeigen
 st.title("Baugesuche Stadt Zürich")
 st.dataframe(df_filtered[["gesuchsnummer", "gesuchsdatum", "strasse", "vorhaben", "bauherrschaft"]])
 
-# PDF Export
 def create_pdf(data):
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
@@ -52,3 +45,4 @@ def create_pdf(data):
 if st.button("Exportiere als PDF"):
     pdf = create_pdf(df_filtered)
     st.download_button("Download PDF", data=pdf, file_name="baugesuche.pdf", mime="application/pdf")
+

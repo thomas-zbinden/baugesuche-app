@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import requests
 from datetime import datetime
-import locale
 from babel.dates import format_date
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -10,15 +9,6 @@ from io import BytesIO
 
 # Sprachwahl
 lang = st.selectbox("Sprache wählen", ["de", "fr", "it", "en"])
-
-# 🌍 Locale setzen – robust gegen Fehler
-try:
-    locale.setlocale(locale.LC_TIME, f"{lang}_CH.UTF-8")
-except locale.Error:
-    try:
-        locale.setlocale(locale.LC_TIME, f"{lang}_DE.UTF-8")
-    except locale.Error:
-        locale.setlocale(locale.LC_TIME, "")  # Fallback
 
 # Daten abrufen
 @st.cache_data
@@ -31,7 +21,7 @@ df = get_data()
 # Datum umwandeln
 df["gesuchsdatum"] = pd.to_datetime(df["gesuchsdatum"], errors="coerce")
 
-# Filters
+# Filter: nur die letzten 30 Tage
 today = pd.Timestamp.now()
 df_filtered = df[df["gesuchsdatum"] >= today - pd.Timedelta(days=30)]
 
@@ -62,4 +52,3 @@ def create_pdf(data):
 if st.button("Exportiere als PDF"):
     pdf = create_pdf(df_filtered)
     st.download_button("Download PDF", data=pdf, file_name="baugesuche.pdf", mime="application/pdf")
-    
